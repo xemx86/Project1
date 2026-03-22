@@ -1,4 +1,4 @@
-import nextVitals from "eslint-config-next/core-web-vitals";
+import "eslint-config-next/core-web-vitals.js";
 
 export default [
   ...nextVitals
