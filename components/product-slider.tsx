@@ -1,4 +1,5 @@
 "use client";
+
 import { RotatingProductImage } from "@/components/rotating-product-image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
@@ -105,12 +106,12 @@ export function ProductSlider({
                   href={`/${lang}/produkt/${product.slug}`}
                   className="slider-card__image"
                 >
-<RotatingProductImage
-  name={product.name}
-  imageUrl={product.image_url}
-  imageUrls={product.image_urls}
-  intervalMs={1500}
-/>
+                  <RotatingProductImage
+                    name={product.name}
+                    imageUrl={product.image_url}
+                    imageUrls={product.image_url ? [product.image_url] : []}
+                    intervalMs={1500}
+                  />
                 </Link>
 
                 <div className="slider-card__body">
