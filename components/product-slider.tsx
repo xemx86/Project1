@@ -109,7 +109,7 @@ export function ProductSlider({
                   <RotatingProductImage
                     name={product.name}
                     imageUrl={product.image_url}
-                    imageUrls={product.image_url ? [product.image_url] : []}
+                    imageUrls={product.image_urls ?? []}
                     intervalMs={1500}
                   />
                 </Link>
