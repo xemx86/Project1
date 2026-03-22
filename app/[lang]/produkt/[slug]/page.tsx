@@ -28,7 +28,7 @@ export default async function ProductPage({
         <ProductGallery
           name={product.name}
           imageUrl={product.image_url}
-          imageUrls={product.image_urls}
+     
         />
 
         <article className="product-info panel">
