@@ -1,35 +1,13 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { cookies } from "next/headers";
-
-export async function createServerSupabaseClient() {
-  const cookieStore = await cookies();
-
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(
-          cookiesToSet: Array<{
-            name: string;
-            value: string;
-            options?: CookieOptions;
-          }>
-        ) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
-            });
-          } catch {
-            // ignored in contexts where cookies cannot be set
-          }
-        },
-      },
-    }
-  );
-}
-
-export const createClient = createServerSupabaseClient;
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+Failed to compile.
+./middleware.ts:44:16
+Type error: Parameter 'cookiesToSet' implicitly has an 'any' type.
+  42 |           return request.cookies.getAll();
+  43 |         },
+> 44 |         setAll(cookiesToSet) {
+     |                ^
+  45 |           cookiesToSet.forEach(({ name, value }) => {
+  46 |             request.cookies.set(name, value);
+  47 |           });
+Next.js build worker exited with code: 1 and signal: null
+Error: Command "npm run build" exited with 1
