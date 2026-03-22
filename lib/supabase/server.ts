@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export async function createClient() {
+export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -20,14 +20,16 @@ export async function createClient() {
           }>
         ) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
           } catch {
-            // Ignored when called from a Server Component where setting cookies is not allowed.
+            // ignored in contexts where cookies cannot be set
           }
         },
       },
     }
   );
 }
+
+export const createClient = createServerSupabaseClient;
