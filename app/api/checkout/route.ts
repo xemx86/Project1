@@ -28,9 +28,9 @@ function getBaseUrl(request: NextRequest) {
 }
 
 function normalizeImageUrl(value: string | null) {
-  if (!value) return undefined;
+  if (!value) return null;
   if (value.startsWith("http://") || value.startsWith("https://")) return value;
-  return undefined;
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       .map((item) => ({
         productId: String(item.productId || ""),
         quantity: Math.max(1, Number(item.quantity || 1)),
-        size: item.size ? String(item.size) : undefined
+        size: item.size ? String(item.size) : null,
       }))
       .filter((item) => item.productId);
 
@@ -83,13 +83,16 @@ export async function POST(request: NextRequest) {
     const products = (data ?? []) as ProductCheckoutRow[];
 
     if (products.length === 0) {
-      return NextResponse.json({ error: "Nie znaleziono produktów do checkoutu." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Nie znaleziono produktów do checkoutu." },
+        { status: 400 }
+      );
     }
 
     const stripe = new Stripe(secretKey);
     const baseUrl = getBaseUrl(request);
 
-    const lineItems = items.map((item) => {
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => {
       const product = products.find((entry) => entry.id === item.productId);
 
       if (!product) {
@@ -106,10 +109,13 @@ export async function POST(request: NextRequest) {
           unit_amount: unitAmount,
           product_data: {
             name: product.name,
-            images: image ? [image] : undefined,
-            metadata: item.size ? { size: item.size, slug: product.slug } : { slug: product.slug }
-          }
-        }
+            images: image ? [image] : [],
+            metadata: {
+              slug: product.slug,
+              size: item.size,
+            },
+          },
+        },
       };
     });
 
@@ -118,12 +124,12 @@ export async function POST(request: NextRequest) {
       billing_address_collection: "required",
       allow_promotion_codes: true,
       shipping_address_collection: {
-        allowed_countries: ["PL", "US", "GB", "DE"]
+        allowed_countries: ["PL", "US", "GB", "DE"],
       },
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout/cancel`,
       line_items: lineItems,
-      client_reference_id: `kickrush-${Date.now()}`
+      client_reference_id: `kickrush-${Date.now()}`,
     });
 
     if (!session.url) {
@@ -134,7 +140,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Nie udało się utworzyć sesji Stripe."
+        error: error instanceof Error ? error.message : "Nie udało się utworzyć sesji Stripe.",
       },
       { status: 500 }
     );
