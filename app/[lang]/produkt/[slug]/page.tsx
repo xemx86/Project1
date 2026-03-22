@@ -24,12 +24,11 @@ export default async function ProductPage({
         <Link href={`/${lang}/sklep`}>Sklep</Link> / {product.name}
       </div>
 
-      <div className="product-page__grid">
-        <ProductGallery
-          name={product.name}
-          imageUrl={product.image_url}
-     
-        />
+<ProductGallery
+  name={product.name}
+  imageUrl={product.image_url}
+  imageUrls={product.image_url ? [product.image_url] : []}
+/>
 
         <article className="product-info panel">
           <div className="product-info__meta">
