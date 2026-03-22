@@ -1,19 +1,31 @@
-import { ReactNode } from "react";
+import { notFound } from "next/navigation";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { CartProvider } from "@/components/cart-provider";
+import { isLocale, locales } from "@/lib/i18n";
 
-export default async function LangLayout({
+export function generateStaticParams() {
+  return locales.map((lang) => ({ lang }));
+}
+
+export default async function LocaleLayout({
   children,
   params,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
 
+  if (!isLocale(lang)) {
+    notFound();
+  }
+
   return (
-    <>
-      <Header lang={lang as "en" | "es"} />
-      <main>{children}</main>
-    </>
+    <CartProvider>
+      <Header lang={lang} />
+      <main className="page-shell">{children}</main>
+      <Footer />
+    </CartProvider>
   );
 }
