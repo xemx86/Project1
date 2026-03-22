@@ -44,10 +44,10 @@ export function ProductAdminForm({
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [featured, setFeatured] = useState(Boolean(product?.is_featured));
 
-const initialExtraImages = useMemo(
-  () => normalizeExtraImageUrls(null, product?.image_url),
-  [product?.image_url]
-);
+  const initialExtraImages = useMemo(
+    () => normalizeExtraImageUrls(product?.image_urls ?? null, product?.image_url),
+    [product?.image_urls, product?.image_url]
+  );
 
   const [extraImages, setExtraImages] = useState<string[]>(initialExtraImages);
 
