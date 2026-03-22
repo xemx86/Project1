@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 type Props = {
   name: string;
   imageUrl: string | null;
-  imageUrls?: string[];
+  imageUrls?: string[] | null;
 };
 
 export function ProductGallery({ name, imageUrl, imageUrls }: Props) {
