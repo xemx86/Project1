@@ -28,7 +28,7 @@ export default async function ProductPage({
         <ProductGallery
           name={product.name}
           imageUrl={product.image_url}
-          imageUrls={product.image_url ? [product.image_url] : []}
+          imageUrls={product.image_urls ?? []}
         />
 
         <article className="product-info panel">
@@ -48,19 +48,19 @@ export default async function ProductPage({
             ) : null}
           </div>
 
-<ProductPurchaseBox
-  lang={lang}
-  product={{
-    id: product.id,
-    slug: product.slug,
-    name: product.name,
-    brand: product.brand,
-    image_url: product.image_url,
-    sizes: product.sizes ?? [],
-    price: product.price,
-    sale_price: product.sale_price,
-  }}
-/>
+          <ProductPurchaseBox
+            lang={lang}
+            product={{
+              id: product.id,
+              slug: product.slug,
+              name: product.name,
+              brand: product.brand,
+              image_url: product.image_url,
+              sizes: product.sizes ?? [],
+              price: product.price,
+              sale_price: product.sale_price,
+            }}
+          />
         </article>
       </div>
     </div>
