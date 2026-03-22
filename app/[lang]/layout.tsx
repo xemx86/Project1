@@ -1,19 +1,18 @@
 import { ReactNode } from "react";
 import { Header } from "@/components/header";
-import { Locale } from "@/lib/i18n";
 
 export default async function LangLayout({
   children,
   params,
 }: {
   children: ReactNode;
-  params: Promise<{ lang: Locale }>;
+  params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
 
   return (
     <>
-      <Header lang={lang} />
+      <Header lang={lang as "en" | "es"} />
       <main>{children}</main>
     </>
   );
