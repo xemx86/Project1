@@ -15,9 +15,10 @@ export async function Header({ lang }: { lang: Locale }) {
         <Link href={`/${lang}`} className="brand">
           <Image
             src="/logo.png"
-            alt="Nathan Sneakers"
+            alt="Natan Snikers"
             className="brand__logo"
-            width={220}
+            width={220
+            }
             height={120}
             priority
           />
