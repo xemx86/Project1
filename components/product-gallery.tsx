@@ -5,8 +5,29 @@ import { useEffect, useMemo, useState } from "react";
 type Props = {
   name: string;
   imageUrl: string | null;
-  imageUrls: string[] | null;
+  imageUrls?: string[];
 };
+
+export default function ProductGallery({
+  name,
+  imageUrl,
+  imageUrls = [],
+}: Props) {
+  const images =
+    imageUrls.length > 0 ? imageUrls : imageUrl ? [imageUrl] : [];
+
+  return (
+    <div>
+      {images.map((src, index) => (
+        <img
+          key={index}
+          src={src}
+          alt={name}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function ProductGallery({ name, imageUrl, imageUrls }: Props) {
   const images = useMemo(() => {
