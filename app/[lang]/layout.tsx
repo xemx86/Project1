@@ -23,12 +23,10 @@ export default async function LocaleLayout({
   }
 
   return (
-    <>
+    <CartProvider>
       <Header lang={lang} />
-      <CartProvider>
-        <main className="page-shell">{children}</main>
-      </CartProvider>
+      <main className="page-shell">{children}</main>
       <Footer />
-    </>
+    </CartProvider>
   );
 }
