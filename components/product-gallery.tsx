@@ -8,27 +8,6 @@ type Props = {
   imageUrls?: string[];
 };
 
-export default function ProductGallery({
-  name,
-  imageUrl,
-  imageUrls = [],
-}: Props) {
-  const images =
-    imageUrls.length > 0 ? imageUrls : imageUrl ? [imageUrl] : [];
-
-  return (
-    <div>
-      {images.map((src, index) => (
-        <img
-          key={index}
-          src={src}
-          alt={name}
-        />
-      ))}
-    </div>
-  );
-}
-
 export function ProductGallery({ name, imageUrl, imageUrls }: Props) {
   const images = useMemo(() => {
     const merged = [
