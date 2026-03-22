@@ -1,8 +1,7 @@
-import "server-only";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
 
-export async function createServerSupabaseClient() {
+export async function createClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -13,16 +12,22 @@ export async function createServerSupabaseClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(
+          cookiesToSet: Array<{
+            name: string;
+            value: string;
+            options?: CookieOptions;
+          }>
+        ) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Ignorowane w Server Components.
+            // Ignored when called from a Server Component where setting cookies is not allowed.
           }
-        }
-      }
+        },
+      },
     }
   );
 }
