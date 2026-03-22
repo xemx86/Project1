@@ -1,17 +1,16 @@
 "use client";
-"use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import {
   createProductAction,
   updateProductAction,
-  type ProductActionState
+  type ProductActionState,
 } from "@/lib/actions/products";
 import { ProductRow } from "@/types/store";
 
 const initialState: ProductActionState = {
   status: "idle",
-  message: ""
+  message: "",
 };
 
 function normalizeSizes(value?: string[] | null) {
@@ -35,7 +34,7 @@ function normalizeExtraImageUrls(
 export function ProductAdminForm({
   mode,
   product,
-  onSaved
+  onSaved,
 }: {
   mode: "create" | "update";
   product?: ProductRow;
@@ -46,11 +45,16 @@ export function ProductAdminForm({
   const [featured, setFeatured] = useState(Boolean(product?.is_featured));
 
   const initialExtraImages = useMemo(
-    () => normalizeExtraImageUrls(product?.image_urls, product?.image_url),
+    () => normalizeExtraImageUrls(product?.image_urls ?? null, product?.image_url),
     [product?.image_urls, product?.image_url]
   );
 
   const [extraImages, setExtraImages] = useState<string[]>(initialExtraImages);
+
+  useEffect(() => {
+    setExtraImages(initialExtraImages);
+  }, [initialExtraImages]);
+
   useEffect(() => {
     if (state.status === "success" && onSaved) {
       onSaved();
@@ -116,7 +120,14 @@ export function ProductAdminForm({
         <div className="field">
           <label>
             Cena
-            <input name="price" type="number" min="0" step="0.01" required defaultValue={product?.price} />
+            <input
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              defaultValue={product?.price}
+            />
           </label>
         </div>
 
