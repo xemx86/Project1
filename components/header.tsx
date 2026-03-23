@@ -6,6 +6,7 @@ import { useMemo, useRef, useState } from "react";
 import { ProductRow } from "@/types/store";
 import { Locale } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils";
+import Link from "next/link";
 
 type Props = {
   products: ProductRow[];
@@ -28,10 +29,23 @@ function formatSizeLabel(raw?: string[] | string | null) {
 
   return `${sizes[0]}-${sizes[sizes.length - 1]}`;
 }
+
+
+
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-[#f5f1eb]">
-      ...
+    <header className="sticky top-0 z-50 bg-[#f5f1eb] border-b border-black/10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+        <Link href="/" className="text-lg font-semibold tracking-wide">
+          KICKRUSH LUXE
+        </Link>
+
+        <nav className="flex items-center gap-6 text-sm font-medium">
+          <Link href="/">Home</Link>
+          <Link href="/#new-arrivals">New Arrivals</Link>
+          <Link href="/#shop">Shop</Link>
+        </nav>
+      </div>
     </header>
   );
 }
