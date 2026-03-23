@@ -1,19 +1,4 @@
-export function Header() {
-  return (
-    <header className="sticky top-0 z-50 bg-[#f5f1eb]">
-      ...
-    </header>
-  );
-}
 
-I przez to rozwaliłeś strukturę projektu. Header ma być w components/header.tsx, nie w sliderze.
-
-Co zrobić teraz
-1. Usuń Header z components/product-slider.tsx
-
-Zostaw w tym pliku tylko slider.
-
-Twój product-slider.tsx ma zaczynać się tak:
 
 "use client";
 
