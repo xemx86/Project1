@@ -139,7 +139,7 @@ export function ProductSlider({
                           position: "absolute",
                           top: "12px",
                           right: "12px",
-                          zIndex: 999,
+                          zIndex: 1,
                           background: "rgba(0, 0, 0, 0.85)",
                           color: "#fff",
                           padding: "8px 12px",
