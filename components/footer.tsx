@@ -4,9 +4,9 @@ export function Footer() {
       <div className="site-footer__inner">
         <div>
           <div className="brand brand--footer">
-            <span className="brand__mark">KR</span>
+            <span className="brand__mark">MR</span>
             <span>
-              KICK<span>RUSH</span>
+              Mike<span>Rymski</span>
             </span>
           </div>
           <div className="footer-muted">Premium storefront · Supabase admin · Stripe-ready checkout</div>
