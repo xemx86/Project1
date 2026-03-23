@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Header } from "@/components/header";
+import Header from "@/components/header";
 import { Footer } from "@/components/footer";
 import { CartProvider } from "@/components/cart-provider";
 import { isLocale, locales } from "@/lib/i18n";
