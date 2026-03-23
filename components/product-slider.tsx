@@ -13,6 +13,20 @@ type Props = {
   title?: string;
 };
 
+function formatSizeLabel(raw?: string | null) {
+  if (!raw) return "";
+
+  const sizes = raw
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (sizes.length === 0) return "";
+  if (sizes.length === 1) return sizes[0];
+
+  return `${sizes[0]}-${sizes[sizes.length - 1]}`;
+}
+
 export function ProductSlider({
   products,
   lang,
@@ -99,36 +113,46 @@ export function ProductSlider({
           ref={trackRef}
           onScroll={handleScroll}
         >
-          {validProducts.map((product) => (
-            <div className="slider-slide" key={product.id}>
-              <article className="slider-card">
-                <Link
-                  href={`/${lang}/produkt/${product.slug}`}
-                  className="slider-card__image"
-                >
-                  <RotatingProductImage
-                    name={product.name}
-                    imageUrl={product.image_url}
-                    imageUrls={product.image_urls ?? []}
-                    intervalMs={1500}
-                  />
-                </Link>
+          {validProducts.map((product) => {
+            const sizeLabel = formatSizeLabel(product.sizes);
 
-                <div className="slider-card__body">
+            return (
+              <div className="slider-slide" key={product.id}>
+                <article className="slider-card">
                   <Link
                     href={`/${lang}/produkt/${product.slug}`}
-                    className="slider-card__title"
+                    className="slider-card__image"
                   >
-                    {product.name}
+                    <RotatingProductImage
+                      name={product.name}
+                      imageUrl={product.image_url}
+                      imageUrls={product.image_urls ?? []}
+                      intervalMs={1500}
+                    />
+
+                    {sizeLabel ? (
+                      <div className="slider-card__size-badge">
+                        Size {sizeLabel}
+                      </div>
+                    ) : null}
                   </Link>
 
-                  <div className="slider-card__price">
-                    {formatPrice(product.sale_price ?? product.price)}
+                  <div className="slider-card__body">
+                    <Link
+                      href={`/${lang}/produkt/${product.slug}`}
+                      className="slider-card__title"
+                    >
+                      {product.name}
+                    </Link>
+
+                    <div className="slider-card__price">
+                      {formatPrice(product.sale_price ?? product.price)}
+                    </div>
                   </div>
-                </div>
-              </article>
-            </div>
-          ))}
+                </article>
+              </div>
+            );
+          })}
         </div>
 
         <button
