@@ -11,7 +11,7 @@
     "badge": "Premium storefront for a modern footwear brand",
     "title": "Buy shoes in a premium fashion style.",
     "titleAccent": "premium fashion",
-    "description": "You already have a better front-end, cart and Stripe-ready checkout. You also keep the admin panel and full product management.",
+    //"description": "You already have a better front-end, cart and Stripe-ready checkout. You also keep the admin panel and full product management.",
     "viewCollection": "View collection",
     "manageProducts": "Manage products",
     "featured": "Featured",
