@@ -1086,4 +1086,23 @@ button {
   width: 180px;
   display: block;
 }
+  .slider-card__image {
+  position: relative;
+  display: block;
+}
+
+.slider-card__size-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
 }
