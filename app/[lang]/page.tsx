@@ -1,4 +1,4 @@
-import { ProductGallery } from "@/components/product-gallery";
+//You already have a better front-endimport { ProductGallery } from "@/components/product-gallery";
 import { ProductSlider } from "@/components/product-slider";
 import Link from "next/link";
 import { listProducts } from "@/lib/products";
