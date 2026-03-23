@@ -121,39 +121,35 @@ export function ProductSlider({
             return (
               <div className="slider-slide" key={product.id}>
                 <article className="slider-card">
- <Link
-  href={`/${lang}/produkt/${product.slug}`}
-  className="slider-card__image"
-  style={{ position: "relative", display: "block" }}
->
-  <RotatingProductImage
-    name={product.name}
-    imageUrl={product.image_url}
-    imageUrls={product.image_urls ?? []}
-    intervalMs={1500}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      top: "12px",
-      right: "12px",
-      zIndex: 999,
-      background: "red",
-      color: "white",
-      padding: "8px 12px",
-      borderRadius: "999px",
-      fontWeight: 700,
-      fontSize: "14px",
-      lineHeight: 1,
-    }}
-  >
-    TEST
-  </div>
-</Link>
+                  <Link
+                    href={`/${lang}/produkt/${product.slug}`}
+                    className="slider-card__image"
+                    style={{ position: "relative", display: "block" }}
+                  >
+                    <RotatingProductImage
+                      name={product.name}
+                      imageUrl={product.image_url}
+                      imageUrls={product.image_urls ?? []}
+                      intervalMs={1500}
+                    />
 
                     {sizeLabel ? (
-                      <div className="slider-card__size-badge">
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "12px",
+                          right: "12px",
+                          zIndex: 999,
+                          background: "rgba(0, 0, 0, 0.85)",
+                          color: "#fff",
+                          padding: "8px 12px",
+                          borderRadius: "999px",
+                          fontWeight: 700,
+                          fontSize: "14px",
+                          lineHeight: 1,
+                          boxShadow: "0 6px 18px rgba(0,0,0,0.25)",
+                        }}
+                      >
                         Size {sizeLabel}
                       </div>
                     ) : null}
