@@ -13,13 +13,15 @@ type Props = {
   title?: string;
 };
 
-function formatSizeLabel(raw?: string | null) {
+function formatSizeLabel(raw?: string[] | string | null) {
   if (!raw) return "";
 
-  const sizes = raw
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const sizes = Array.isArray(raw)
+    ? raw.map((item) => String(item).trim()).filter(Boolean)
+    : raw
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
 
   if (sizes.length === 0) return "";
   if (sizes.length === 1) return sizes[0];
