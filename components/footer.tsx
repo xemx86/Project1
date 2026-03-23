@@ -6,7 +6,7 @@ export function Footer() {
           <div className="brand brand--footer">
             <span className="brand__mark">MR</span>
             <span>
-              Mike<span>Rymski</span>
+              xE<span>Mx</span>
             </span>
           </div>
           <div className="footer-muted">Premium storefront · Supabase admin · Stripe-ready checkout</div>
