@@ -28,7 +28,13 @@ function formatSizeLabel(raw?: string[] | string | null) {
 
   return `${sizes[0]}-${sizes[sizes.length - 1]}`;
 }
-
+export function Header() {
+  return (
+    <header className="sticky top-0 z-50 bg-[#f5f1eb]">
+      ...
+    </header>
+  );
+}
 export function ProductSlider({
   products,
   lang,
