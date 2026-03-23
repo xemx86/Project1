@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
+import { RotatingProductImage } from "@/components/rotating-product-image";
 type Props = {
   name: string;
   imageUrl: string | null;
