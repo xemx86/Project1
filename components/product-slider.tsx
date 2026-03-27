@@ -15,8 +15,7 @@ import type { Locale } from "@/lib/i18n";
 // Import typu produktu ze store
 import type { ProductRow } from "@/types/store";
 
-// Import linku z obsługą kliknięć produktu
-import { ProductClickLink } from "@/components/product-click-link";
+
 
 // Typ propsów dla slidera
 type Props = {
