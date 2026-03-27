@@ -1,153 +1,73 @@
+
+
 "use client";
 
-/* Komponent linku produktu z obsługą kliknięcia */
-import { ProductClickLink } from "@/components/product-click-link";
-
-/* Komponent obracającego się zdjęcia produktu */
 import { RotatingProductImage } from "@/components/rotating-product-image";
-
-/* Funkcja do formatowania ceny */
+import Link from "next/link";
+import { useMemo, useRef, useState } from "react";
+import { ProductRow } from "@/types/store";
+import { Locale } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils";
 
-/* Hooki React */
-import { useMemo, useRef, useState } from "react";
-
-/* Typ języka */
-import type { Locale } from "@/lib/i18n";
-
-/* Typ produktu */
-import type { ProductRow } from "@/types/store";
-
-/* Typ propsów dla slidera */
 type Props = {
   products: ProductRow[];
   lang: Locale;
   title?: string;
-  titleMain?: string;
-  titleAccent?: string;
 };
 
-/* Zwraca pierwszy dostępny rozmiar z tablicy */
-function getFirstSize(sizes?: string[] | null): string | null {
-  return Array.isArray(sizes) && sizes.length > 0 ? sizes[0] : null;
+function formatSizeLabel(raw?: string[] | string | null) {
+  if (!raw) return "";
+
+  const sizes = Array.isArray(raw)
+    ? raw.map((item) => String(item).trim()).filter(Boolean)
+    : raw
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+  if (sizes.length === 0) return "";
+  if (sizes.length === 1) return sizes[0];
+
+  return `${sizes[0]}-${sizes[sizes.length - 1]}`;
 }
 
-/* Sprawdza, czy produkt ma jakikolwiek rozmiar do pokazania w badge */
-function shouldShowSizeBadge(product: ProductRow): boolean {
-  return Boolean(
-    getFirstSize(product.sizes) ||
-      getFirstSize(product.sizes_men) ||
-      getFirstSize(product.sizes_women)
-  );
-}
-
-/* Buduje tekst badge z rozmiarem zależnie od systemu rozmiarowego produktu */
-function getSizeBadgeText(product: ProductRow, lang: Locale): string {
-  const firstSize = getFirstSize(product.sizes);
-  const firstMenSize = getFirstSize(product.sizes_men);
-  const firstWomenSize = getFirstSize(product.sizes_women);
-
-  if (product.size_system === "men") {
-    return lang === "es"
-      ? `Hombre ${firstSize ?? ""}`
-      : `Men ${firstSize ?? ""}`;
-  }
-
-  if (product.size_system === "women") {
-    return lang === "es"
-      ? `Mujer ${firstSize ?? ""}`
-      : `Women ${firstSize ?? ""}`;
-  }
-
-  if (product.size_system === "kids") {
-    return lang === "es"
-      ? `Niños ${firstSize ?? ""}`
-      : `Kids ${firstSize ?? ""}`;
-  }
-
-  if (product.size_system === "men_women") {
-    return lang === "es"
-      ? `H ${firstMenSize ?? "-"} / M ${firstWomenSize ?? "-"}`
-      : `M ${firstMenSize ?? "-"} / W ${firstWomenSize ?? "-"}`;
-  }
-
-  return lang === "es"
-    ? `Talla ${firstSize ?? ""}`
-    : `Size ${firstSize ?? ""}`;
-}
-
-/* Zwraca tekst dla badge grupy docelowej produktu */
-function getAudienceLabel(
-  audience: ProductRow["audience"],
-  lang: Locale
-): string {
-  if (audience === "men") {
-    return lang === "es" ? "Hombre" : "Men";
-  }
-
-  if (audience === "women") {
-    return lang === "es" ? "Mujer" : "Women";
-  }
-
-  if (audience === "kids") {
-    return lang === "es" ? "Niños" : "Kids";
-  }
-
-  return "Unisex";
-}
-
-/* Główny komponent slidera produktów */
 export function ProductSlider({
   products,
   lang,
-  title,
-  titleMain,
-  titleAccent,
-}: Props) {
-  /* Referencja do tracka slidera */
+  title = "New Arrivals",
+}: Props) { 
   const trackRef = useRef<HTMLDivElement | null>(null);
-
-  /* Aktualnie aktywny indeks slajdu */
   const [activeIndex, setActiveIndex] = useState(0);
 
-  /* Zabezpieczenie, żeby zawsze pracować na poprawnej tablicy */
   const validProducts = useMemo(() => products ?? [], [products]);
 
-  /* Przewija slider do wskazanego indeksu */
   function scrollToIndex(index: number) {
     const track = trackRef.current;
     if (!track) return;
 
     const slides = track.querySelectorAll<HTMLElement>(".slider-slide");
-    if (!slides.length) return;
-
-    const clampedIndex =
-      index < 0 ? slides.length - 1 : index >= slides.length ? 0 : index;
-
+    const clampedIndex = Math.max(0, Math.min(index, slides.length - 1));
     const target = slides[clampedIndex];
+
     if (!target) return;
 
-    const left = target.offsetLeft - track.offsetLeft;
-
-    track.scrollTo({
-      left,
+    target.scrollIntoView({
       behavior: "smooth",
+      inline: "start",
+      block: "nearest",
     });
 
     setActiveIndex(clampedIndex);
   }
 
-  /* Przycisk poprzedniego slajdu */
   function handlePrev() {
     scrollToIndex(activeIndex - 1);
   }
 
-  /* Przycisk następnego slajdu */
   function handleNext() {
     scrollToIndex(activeIndex + 1);
   }
 
-  /* Aktualizuje aktywny slajd podczas ręcznego scrollowania */
   function handleScroll() {
     const track = trackRef.current;
     if (!track) return;
@@ -165,7 +85,6 @@ export function ProductSlider({
 
     slides.forEach((slide, index) => {
       const distance = Math.abs(slide.getBoundingClientRect().left - trackLeft);
-
       if (distance < closestDistance) {
         closestDistance = distance;
         closestIndex = index;
@@ -175,45 +94,20 @@ export function ProductSlider({
     setActiveIndex(closestIndex);
   }
 
-  /* Jeśli brak produktów, nic nie renderujemy */
   if (!validProducts.length) return null;
 
-  /* Teksty nagłówka slidera */
-  const headingMain =
-    titleMain ?? (lang === "es" ? "Nuevas" : "New");
-
-  const headingAccent =
-    titleAccent ?? (lang === "es" ? "Llegadas" : "Arrivals");
-
   return (
-    <section className="slider-section slider-section--luxe">
-      <div className="slider-header slider-header--luxe">
-        {title ? (
-          <h2 className="slider-title">{title}</h2>
-        ) : (
-          <h2
-            style={{
-              fontSize: "clamp(2.2rem, 5vw, 4.5rem)",
-              fontWeight: 900,
-              lineHeight: 0.95,
-              letterSpacing: "-0.03em",
-              textAlign: "center",
-              margin: 0,
-              textTransform: "none",
-            }}
-          >
-            <span style={{ color: "#b37543" }}>{headingMain}</span>{" "}
-            <span style={{ color: "#060101" }}>{headingAccent}</span>
-          </h2>
-        )}
+    <section className="slider-section">
+      <div className="slider-header">
+        <h2>{title}</h2>
       </div>
 
-      <div className="slider-shell slider-shell--luxe">
+      <div className="slider-shell">
         <button
           type="button"
           className="slider-arrow slider-arrow--left"
           onClick={handlePrev}
-          aria-label={lang === "es" ? "Productos anteriores" : "Previous products"}
+          aria-label="Previous products"
         >
           ‹
         </button>
@@ -223,61 +117,56 @@ export function ProductSlider({
           ref={trackRef}
           onScroll={handleScroll}
         >
-          {validProducts.map((product, index) => {
-            const showSizeBadge = shouldShowSizeBadge(product);
-            const sizeBadgeText = getSizeBadgeText(product, lang);
-            const audienceLabel = getAudienceLabel(product.audience, lang);
+          {validProducts.map((product) => {
+            const sizeLabel = formatSizeLabel(product.sizes);
 
             return (
-              <div
-                className="slider-slide"
-                key={`${product.id}-${product.slug ?? index}`}
-              >
-                <article className="slider-card slider-card--luxe">
-                  <div className="slider-card__media slider-card__media--luxe">
-                    <ProductClickLink
-                      href={`/${lang}/produkt/${product.slug}`}
-                      slug={product.slug}
-                      className="slider-card__image slider-card__image--luxe"
-                    >
-                      <RotatingProductImage
-                        name={product.name}
-                        imageUrl={product.image_url}
-                        imageUrls={product.image_urls ?? []}
-                        intervalMs={2000}
-                      />
-                    </ProductClickLink>
+              <div className="slider-slide" key={product.id}>
+                <article className="slider-card">
+                  <Link
+                    href={`/${lang}/produkt/${product.slug}`}
+                    className="slider-card__image"
+                    style={{ position: "relative", display: "block" }}
+                  >
+                    <RotatingProductImage
+                      name={product.name}
+                      imageUrl={product.image_url}
+                      imageUrls={product.image_urls ?? []}
+                      intervalMs={1500}
+                    />
 
-                    {showSizeBadge ? (
-                      <div className="slider-card__size-badge">
-                        {sizeBadgeText}
+                    {sizeLabel ? (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "12px",
+                          right: "12px",
+                          zIndex: 1,
+                          background: "rgba(0, 0, 0, 0.85)",
+                          color: "#fff",
+                          padding: "8px 12px",
+                          borderRadius: "999px",
+                          fontWeight: 700,
+                          fontSize: "14px",
+                          lineHeight: 1,
+                          boxShadow: "0 6px 18px rgba(0,0,0,0.25)",
+                        }}
+                      >
+                        Size {sizeLabel}
                       </div>
                     ) : null}
-                  </div>
+                  </Link>
 
-                  <div className="slider-card__body slider-card__body--luxe">
-                    <div className="slider-card__meta">
-                      <div className="slider-card__badges">
-                        <div className="slider-card__badge">
-                          {lang === "es" ? "Nuevo" : "New"}
-                        </div>
+                  <div className="slider-card__body">
+                    <Link
+                      href={`/${lang}/produkt/${product.slug}`}
+                      className="slider-card__title"
+                    >
+                      {product.name}
+                    </Link>
 
-                        <div className="slider-card__badge slider-card__badge--soft">
-                          {audienceLabel}
-                        </div>
-                      </div>
-
-                      <ProductClickLink
-                        href={`/${lang}/produkt/${product.slug}`}
-                        slug={product.slug}
-                        className="slider-card__title slider-card__title--luxe"
-                      >
-                        {product.name}
-                      </ProductClickLink>
-
-                      <div className="slider-card__price slider-card__price--luxe">
-                        {formatPrice(product.sale_price ?? product.price)}
-                      </div>
+                    <div className="slider-card__price">
+                      {formatPrice(product.sale_price ?? product.price)}
                     </div>
                   </div>
                 </article>
@@ -290,34 +179,22 @@ export function ProductSlider({
           type="button"
           className="slider-arrow slider-arrow--right"
           onClick={handleNext}
-          aria-label={lang === "es" ? "Siguientes productos" : "Next products"}
+          aria-label="Next products"
         >
           ›
         </button>
       </div>
 
-      <div
-        className="slider-dots-wrap"
-        aria-label={
-          lang === "es" ? "Navegación del slider" : "Slider navigation"
-        }
-      >
-        {validProducts.map((product, index) => {
-          const isActive = index === activeIndex;
-
-          return (
-            <button
-              key={`${product.id}-dot-${index}`}
-              type="button"
-              aria-label={`${
-                lang === "es" ? "Ir al slide" : "Go to slide"
-              } ${index + 1}`}
-              aria-pressed={isActive}
-              className={`slider-dot ${isActive ? "slider-dot--active" : ""}`}
-              onClick={() => scrollToIndex(index)}
-            />
-          );
-        })}
+      <div className="slider-dots">
+        {validProducts.map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            className={index === activeIndex ? "slider-dot is-active" : "slider-dot"}
+            onClick={() => scrollToIndex(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
       </div>
     </section>
   );
