@@ -4,9 +4,9 @@
    Dzięki temu jeden użytkownik nie nabije wielu kliknięć
    na ten sam produkt podczas jednej sesji przeglądarki. */
 
-import Link from "next/link";
-import type { ReactNode, MouseEvent } from "react";
 
+import type { ReactNode, MouseEvent } from "react";
+import ProductClickLink from "@/components/product-click-link";
 type Props = {
   /* Docelowy adres produktu */
   href: string;
