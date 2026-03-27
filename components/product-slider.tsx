@@ -1,37 +1,39 @@
 "use client";
 
-// Import hooków React do memoizacji danych, referencji DOM i stanu aktywnego slajdu
-import { useMemo, useRef, useState } from "react";
+/* Komponent linku produktu z obsługą kliknięcia */
+import { ProductClickLink } from "@/components/product-click-link";
 
-// Import komponentu obracającego zdjęcia produktu
+/* Komponent obracającego się zdjęcia produktu */
 import { RotatingProductImage } from "@/components/rotating-product-image";
 
-// Import funkcji do formatowania ceny
+/* Funkcja do formatowania ceny */
 import { formatPrice } from "@/lib/utils";
 
-// Import typu języka
+/* Hooki React */
+import { useMemo, useRef, useState } from "react";
+
+/* Typ języka */
 import type { Locale } from "@/lib/i18n";
 
-// Import typu produktu ze store
+/* Typ produktu */
 import type { ProductRow } from "@/types/store";
 
-
-
-// Typ propsów dla slidera
+/* Typ propsów dla slidera */
 type Props = {
   products: ProductRow[];
   lang: Locale;
+  title?: string;
   titleMain?: string;
   titleAccent?: string;
 };
 
-// Zwraca pierwszy element z tablicy rozmiarów albo null
-function getFirstSize(sizes?: string[] | null) {
+/* Zwraca pierwszy dostępny rozmiar z tablicy */
+function getFirstSize(sizes?: string[] | null): string | null {
   return Array.isArray(sizes) && sizes.length > 0 ? sizes[0] : null;
 }
 
-// Sprawdza, czy produkt ma jakikolwiek rozmiar do pokazania w badge
-function shouldShowSizeBadge(product: ProductRow) {
+/* Sprawdza, czy produkt ma jakikolwiek rozmiar do pokazania w badge */
+function shouldShowSizeBadge(product: ProductRow): boolean {
   return Boolean(
     getFirstSize(product.sizes) ||
       getFirstSize(product.sizes_men) ||
@@ -39,8 +41,8 @@ function shouldShowSizeBadge(product: ProductRow) {
   );
 }
 
-// Buduje tekst badge z rozmiarem zależnie od systemu rozmiarowego produktu
-function getSizeBadgeText(product: ProductRow, lang: Locale) {
+/* Buduje tekst badge z rozmiarem zależnie od systemu rozmiarowego produktu */
+function getSizeBadgeText(product: ProductRow, lang: Locale): string {
   const firstSize = getFirstSize(product.sizes);
   const firstMenSize = getFirstSize(product.sizes_men);
   const firstWomenSize = getFirstSize(product.sizes_women);
@@ -74,8 +76,11 @@ function getSizeBadgeText(product: ProductRow, lang: Locale) {
     : `Size ${firstSize ?? ""}`;
 }
 
-// Zwraca tekst dla badge grupy docelowej produktu
-function getAudienceLabel(audience: ProductRow["audience"], lang: Locale) {
+/* Zwraca tekst dla badge grupy docelowej produktu */
+function getAudienceLabel(
+  audience: ProductRow["audience"],
+  lang: Locale
+): string {
   if (audience === "men") {
     return lang === "es" ? "Hombre" : "Men";
   }
@@ -91,23 +96,24 @@ function getAudienceLabel(audience: ProductRow["audience"], lang: Locale) {
   return "Unisex";
 }
 
-// Główny komponent slidera produktów
+/* Główny komponent slidera produktów */
 export function ProductSlider({
   products,
   lang,
+  title,
   titleMain,
   titleAccent,
 }: Props) {
-  // Ref do tracka slidera, żeby móc przewijać programowo
+  /* Referencja do tracka slidera */
   const trackRef = useRef<HTMLDivElement | null>(null);
 
-  // Aktualnie aktywny slajd dla dolnych indicatorów
+  /* Aktualnie aktywny indeks slajdu */
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Zabezpieczenie, żeby zawsze pracować na tablicy
+  /* Zabezpieczenie, żeby zawsze pracować na poprawnej tablicy */
   const validProducts = useMemo(() => products ?? [], [products]);
 
-  // Przewija slider do konkretnego indeksu
+  /* Przewija slider do wskazanego indeksu */
   function scrollToIndex(index: number) {
     const track = trackRef.current;
     if (!track) return;
@@ -115,27 +121,33 @@ export function ProductSlider({
     const slides = track.querySelectorAll<HTMLElement>(".slider-slide");
     if (!slides.length) return;
 
-    // Zapętlenie indeksu w lewo/prawo
     const clampedIndex =
       index < 0 ? slides.length - 1 : index >= slides.length ? 0 : index;
 
     const target = slides[clampedIndex];
     if (!target) return;
 
-    // Wyliczamy pozycję docelowego slajdu względem tracka
     const left = target.offsetLeft - track.offsetLeft;
 
-    // Płynne przewinięcie
     track.scrollTo({
       left,
       behavior: "smooth",
     });
 
-    // Aktualizacja aktywnego slajdu
     setActiveIndex(clampedIndex);
   }
 
-  // Aktualizuje aktywny indeks podczas ręcznego scrollowania
+  /* Przycisk poprzedniego slajdu */
+  function handlePrev() {
+    scrollToIndex(activeIndex - 1);
+  }
+
+  /* Przycisk następnego slajdu */
+  function handleNext() {
+    scrollToIndex(activeIndex + 1);
+  }
+
+  /* Aktualizuje aktywny slajd podczas ręcznego scrollowania */
   function handleScroll() {
     const track = trackRef.current;
     if (!track) return;
@@ -151,7 +163,6 @@ export function ProductSlider({
     let closestIndex = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
 
-    // Szukamy slajdu najbliżej lewej krawędzi tracka
     slides.forEach((slide, index) => {
       const distance = Math.abs(slide.getBoundingClientRect().left - trackLeft);
 
@@ -164,45 +175,57 @@ export function ProductSlider({
     setActiveIndex(closestIndex);
   }
 
-  // Jeśli nie ma produktów, nie renderujemy slidera
+  /* Jeśli brak produktów, nic nie renderujemy */
   if (!validProducts.length) return null;
 
-  // Tytuł główny slidera
-  const headingMain = titleMain ?? (lang === "es" ? "Nuevas" : "New");
+  /* Teksty nagłówka slidera */
+  const headingMain =
+    titleMain ?? (lang === "es" ? "Nuevas" : "New");
 
-  // Druga część tytułu slidera
   const headingAccent =
     titleAccent ?? (lang === "es" ? "Llegadas" : "Arrivals");
 
   return (
     <section className="slider-section slider-section--luxe">
       <div className="slider-header slider-header--luxe">
-        <h2
-          style={{
-            fontSize: "clamp(2.2rem, 5vw, 4.5rem)",
-            fontWeight: 900,
-            lineHeight: 0.95,
-            letterSpacing: "-0.03em",
-            textAlign: "center",
-            margin: 0,
-            textTransform: "none",
-          }}
-        >
-          <span style={{ color: "#b37543" }}>{headingMain}</span>{" "}
-          <span style={{ color: "#060101" }}>{headingAccent}</span>
-        </h2>
+        {title ? (
+          <h2 className="slider-title">{title}</h2>
+        ) : (
+          <h2
+            style={{
+              fontSize: "clamp(2.2rem, 5vw, 4.5rem)",
+              fontWeight: 900,
+              lineHeight: 0.95,
+              letterSpacing: "-0.03em",
+              textAlign: "center",
+              margin: 0,
+              textTransform: "none",
+            }}
+          >
+            <span style={{ color: "#b37543" }}>{headingMain}</span>{" "}
+            <span style={{ color: "#060101" }}>{headingAccent}</span>
+          </h2>
+        )}
       </div>
 
       <div className="slider-shell slider-shell--luxe">
-        <div className="slider-track" ref={trackRef} onScroll={handleScroll}>
+        <button
+          type="button"
+          className="slider-arrow slider-arrow--left"
+          onClick={handlePrev}
+          aria-label={lang === "es" ? "Productos anteriores" : "Previous products"}
+        >
+          ‹
+        </button>
+
+        <div
+          className="slider-track"
+          ref={trackRef}
+          onScroll={handleScroll}
+        >
           {validProducts.map((product, index) => {
-            // Czy pokazać badge z rozmiarem
             const showSizeBadge = shouldShowSizeBadge(product);
-
-            // Tekst badge z rozmiarem
             const sizeBadgeText = getSizeBadgeText(product, lang);
-
-            // Tekst badge z grupą docelową
             const audienceLabel = getAudienceLabel(product.audience, lang);
 
             return (
@@ -225,11 +248,11 @@ export function ProductSlider({
                       />
                     </ProductClickLink>
 
-                    {showSizeBadge && (
+                    {showSizeBadge ? (
                       <div className="slider-card__size-badge">
                         {sizeBadgeText}
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   <div className="slider-card__body slider-card__body--luxe">
@@ -262,9 +285,17 @@ export function ProductSlider({
             );
           })}
         </div>
+
+        <button
+          type="button"
+          className="slider-arrow slider-arrow--right"
+          onClick={handleNext}
+          aria-label={lang === "es" ? "Siguientes productos" : "Next products"}
+        >
+          ›
+        </button>
       </div>
 
-      {/* Dolna nawigacja slidera w formie kapsułek */}
       <div
         className="slider-dots-wrap"
         aria-label={
@@ -272,7 +303,6 @@ export function ProductSlider({
         }
       >
         {validProducts.map((product, index) => {
-          // Sprawdzamy, czy dany slajd jest aktualnie aktywny
           const isActive = index === activeIndex;
 
           return (
